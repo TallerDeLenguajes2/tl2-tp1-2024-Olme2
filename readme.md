@@ -12,8 +12,12 @@ Cadeteria:
     EliminarCadete(Cadete)
 Cadete:
     EntregarPedido(Pedido)
-    CalcularJornal()
     AgregarPedido(Pedido)
     EliminarPedido(Pedido)
     ListarPedidos()
+
+Teniendo en cuenta los principios de abstracción y ocultamiento, ¿que atributos, propiedades y métodos deberían ser públicos y cuáles privados?.
+Todos los campos son privados y los metodos y propiedades son publicos.
+
+¿Cómo diseñaría los constructores de cada una de las clases?
 
