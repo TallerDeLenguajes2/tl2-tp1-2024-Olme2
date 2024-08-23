@@ -5,3 +5,15 @@ Cadeteria->Cadete Composicion
 Pedidos->Cadete Agregacion
 
 ¿Qué métodos considera que debería tener la clase Cadetería y la clase Cadete?
+Cadeteria:
+    AsignarPedido(Cadete, Pedido)
+    GenerarInformeDeActividad()
+    AgregarCadete(Cadete)
+    EliminarCadete(Cadete)
+Cadete:
+    EntregarPedido(Pedido)
+    CalcularJornal()
+    AgregarPedido(Pedido)
+    EliminarPedido(Pedido)
+    ListarPedidos()
+
