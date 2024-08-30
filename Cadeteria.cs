@@ -1,10 +1,9 @@
-namespace Cadeteria;
 public class Cliente{
     private string? nombre{get;set;}
     private string? direccion{get;set;}
     private string? telefono{get;set;}
     private string? datosReferenciaDireccion{get;set;}
-    public Cliente(string Nombre, string Direccion, string Telefono, string DatosReferenciaDireccion){
+    public Cliente(string? Nombre, string? Direccion, string? Telefono, string? DatosReferenciaDireccion){
         nombre=Nombre;
         direccion=Direccion;
         telefono=Telefono;
@@ -24,12 +23,13 @@ public class Cliente{
     }
 }
 public class Pedidos{
+    private static int contador=1;
     private int numero{get;set;}
     private string? obs{get;set;}
     private Cliente? cliente{get;set;}
     private string? estado{get;set;}
-    public Pedidos(int Numero, string Obs, Cliente Cliente){
-        numero=Numero;
+    public Pedidos(string? Obs, Cliente Cliente){
+        numero=contador++;
         obs=Obs;
         cliente=Cliente;
         estado="Sin entregar";
@@ -62,9 +62,18 @@ public class Pedidos{
     public void cambiarEstadoAEntregado(){
         estado="Entregado";
     }
+    public void cambiarEstadoASinEntregar(){
+        estado="Sin entregar";
+    }
+    public int mostrarNumeroDePedido(){
+        return numero;
+    }
+    public string? mostarEstadoDePedido(){
+        return estado;
+    }
 }
 public class Cadete{
-    private int id{get;set;}
+    public int id{get;set;}
     private string? nombre{get;set;}
     private string? direccion{get;set;}
     private string? telefono{get;set;}
@@ -92,6 +101,7 @@ public class Cadete{
             pedido.EliminarCliente();
             pedido.cambiarEstadoAEntregado();
             EliminarPedido(pedido);
+            Cadeteria.aumentarPedidosEntregados();
         }else{
             Console.WriteLine("El pedido no se encuentra en la lista de pedidos");
         }
@@ -101,6 +111,7 @@ public class Cadete{
             Console.WriteLine("El pedido ya se encuentra en la lista de pedidos");
         }else{
             listadoPedidos.Add(pedido);
+            EntregarPedido(pedido);
         }
     }
     public void EliminarPedido(Pedidos pedido){
@@ -110,15 +121,26 @@ public class Cadete{
            Console.WriteLine("El pedido no se encuentra en la lista de pedidos");
         }
     }
+    public int VerCantidadPedidos(){
+        return listadoPedidos.Count;
+    }
+    public string AsignarInformeCadete(int pedidosTotales){
+        string informe=$"\nCadete {nombre}:\nSe entregaron {cantidadDePedidosEntregados} pedidos, se ganó ${jornal} por los pedidos y el promedio de pedidos entregados de este cadete fue de {((double)cantidadDePedidosEntregados/pedidosTotales)} pedidos";
+        return informe;
+    }
+    public string? VerNombreCadete(){
+        return nombre;
+    }
     
 }
 public class Cadeteria{
     private string? nombre{get;set;}
     private string? telefono{get;set;}
     private List<Cadete> listadoCadetes{get;set;}
-    private int pedidosEntregados{get;set;}
+    private static int pedidosEntregados{get;set;}
     private int pedidosAsignados{get;set;}
     private int pedidosReasignados{get;set;}
+    private List<Pedidos>? pedidosSinAsignar{get;set;}
 
     public Cadeteria(string Nombre, string Telefono){
         nombre=Nombre;
@@ -127,13 +149,18 @@ public class Cadeteria{
         pedidosEntregados=0;
         pedidosAsignados=0;
         pedidosReasignados=0;
+        pedidosSinAsignar=new List<Pedidos>();
     }
-    public void AsignarPedido(Cadete cadete, Pedidos pedido){
-        if(cadete.SeEncuentraPedido(pedido)){
-            Console.WriteLine("El pedido ya se encuentra asignado al cadete");
+    public void AsignarPedido(Cadete? cadete, Pedidos pedido){
+        if(cadete!=null && pedido!=null){
+            if(cadete.SeEncuentraPedido(pedido)){
+                Console.WriteLine("El pedido ya se encuentra asignado al cadete");
+            }else{
+                cadete.AgregarPedido(pedido);
+                pedidosAsignados++;
+            }
         }else{
-            cadete.AgregarPedido(pedido);
-            pedidosAsignados++;
+            Console.WriteLine("Cadete o Pedido inexistente");
         }
     }
     public void ReasignarPedido(Cadete viejo, Cadete nuevo, Pedidos pedido){
@@ -153,7 +180,11 @@ public class Cadeteria{
         }
     }
     public string asignarInformeDeActividad(){
-        string? informe=$"Se asignaron {pedidosAsignados} pedidos\nSe entregaron {pedidosEntregados} pedidos\nSe reasignaron {pedidosReasignados}";
+        string? informe=$"Se asignaron {pedidosAsignados} pedidos\nSe entregaron {pedidosEntregados} pedidos\nSe reasignaron {pedidosReasignados}\n";
+        foreach(var cadete in listadoCadetes){
+            cadete.JornalACobrar();
+            informe+=cadete.AsignarInformeCadete(pedidosEntregados);
+        }
         return informe;
     }
     public void agregarCadete(Cadete cadete){
@@ -162,4 +193,141 @@ public class Cadeteria{
     public void eliminarCadete(Cadete cadete){
         listadoCadetes.Remove(cadete);
    }
+   public static void aumentarPedidosEntregados(){
+        pedidosEntregados++;
+   }
+   public static Cadeteria CargarDatosCadeteria(string archivoCadeteria, string archivoCadetes){
+            var cadeteriaDatos = File.ReadAllLines(archivoCadeteria).First().Split(';');
+            Cadeteria cadeteria = new Cadeteria(cadeteriaDatos[0], cadeteriaDatos[1]);
+            var cadetesDatos = File.ReadAllLines(archivoCadetes);
+            foreach (var linea in cadetesDatos)
+            {
+                var datos = linea.Split(';');
+                int id = int.Parse(datos[0]);
+                string nombre = datos[1];
+                string direccion = datos[2];
+                string telefono = datos[3];
+
+                Cadete cadete = new Cadete(id, nombre, direccion, telefono);
+                cadeteria.agregarCadete(cadete);
+            }
+
+            return cadeteria;
+    }
+    public void AgregarPedidoALista(Pedidos pedido){
+        if(pedidosSinAsignar!=null){
+            pedidosSinAsignar.Add(pedido);
+        }else{
+            Console.WriteLine("Lista de pedidos inexistente");
+        }
+    }
+    public Pedidos? BuscarPedidoPorNumero(int numero){
+        if(pedidosSinAsignar!=null){
+            foreach (var pedido in pedidosSinAsignar){
+                int numeroPedido=pedido.mostrarNumeroDePedido();
+                if (numeroPedido == numero){
+                    return pedido;
+                }
+            }
+        }
+        return null;
+    }
+    public Cadete? BuscarCadetePorId(int id){
+        return listadoCadetes.FirstOrDefault(c => c.id == id);
+    }
+    public Cadete? SeleccionarCadeteAleatorio(){
+        if(listadoCadetes.Count > 0){
+            Random random = new Random();
+            int index = random.Next(0, listadoCadetes.Count);
+            return listadoCadetes[index];
+        }else{
+            Console.WriteLine("No hay cadetes");
+            return null;
+        } 
+    }
+}
+
+public class Interfaz{
+    public static void DarDeAltaPedido(Cadeteria cadeteria){
+            Console.Write("Ingrese el nombre del cliente: ");
+            string? nombreCliente = Console.ReadLine();
+            Console.Write("Ingrese la dirección del cliente: ");
+            string? direccionCliente = Console.ReadLine();
+            Console.Write("Ingrese el teléfono del cliente: ");
+            string? telefonoCliente = Console.ReadLine();
+            Console.Write("Ingrese los datos de referencia de la dirección: ");
+            string? referenciaDireccion = Console.ReadLine();
+            Cliente cliente = new Cliente(nombreCliente, direccionCliente, telefonoCliente, referenciaDireccion);
+            Console.Write("Ingrese las observaciones del pedido: ");
+            string? obsPedido = Console.ReadLine();
+            Pedidos pedido = new Pedidos(obsPedido, cliente);
+            cadeteria.AgregarPedidoALista(pedido);
+            Console.WriteLine("Pedido dado de alta exitosamente.");
+    }
+    public static void AsignarPedidoACadete(Cadeteria cadeteria){
+        Console.Write("Ingrese el número del pedido: ");
+        #pragma warning disable CS8604 // Posible argumento de referencia nulo
+        int numeroPedido = int.Parse(Console.ReadLine());
+        #pragma warning restore CS8604 // Posible argumento de referencia nulo
+        Pedidos? pedido = cadeteria.BuscarPedidoPorNumero(numeroPedido);
+        if (pedido == null){
+            Console.WriteLine("El pedido no existe.");
+            return;
+        }
+        Cadete? cadete = cadeteria.SeleccionarCadeteAleatorio();
+        cadeteria.AsignarPedido(cadete, pedido);
+        #pragma warning disable CS8602 // Desreferencia de una referencia posiblemente NULL.
+        Console.WriteLine($"Pedido asignado al cadete {cadete.VerNombreCadete()}");
+        #pragma warning restore CS8602 // Desreferencia de una referencia posiblemente NULL.
+    }
+    public static void CambiarEstadoPedido(Cadeteria cadeteria)
+        {
+            Console.Write("Ingrese el número del pedido a cambiar de estado: ");
+            #pragma warning disable CS8604 // Posible argumento de referencia nulo
+            int numeroPedido = int.Parse(Console.ReadLine());
+            #pragma warning restore CS8604 // Posible argumento de referencia nulo
+            Pedidos? pedido=cadeteria.BuscarPedidoPorNumero(numeroPedido);
+            if(pedido!=null){
+                string? estado=pedido.mostarEstadoDePedido();
+                Console.WriteLine($"El estado del pedido es '{estado}'");
+                if(estado=="Entregado"){
+                    pedido.cambiarEstadoASinEntregar();
+                    Console.WriteLine("Estado del pedido cambiado a 'Sin Entregar'.");
+                }else{
+                    pedido.cambiarEstadoAEntregado();
+                    Console.WriteLine("Estado del pedido cambiado a 'Entregado'.");
+                }
+            }else{
+                Console.WriteLine("El pedido no existe.");
+            }
+        }
+    public static void ReasignarPedido(Cadeteria cadeteria){
+        #pragma warning disable CS8604 // Posible argumento de referencia nulo
+        int idViejoCadete;
+        int idNuevoCadete;
+        Console.Write("Ingrese el número del pedido a reasignar: ");
+        int numeroPedido = int.Parse(Console.ReadLine());
+        Pedidos? pedido=cadeteria.BuscarPedidoPorNumero(numeroPedido);
+        do{
+            Console.Write("Ingrese el ID del cadete al que está asignado el pedido: ");
+            idViejoCadete = int.Parse(Console.ReadLine());
+            Console.Write("Ingrese el ID del nuevo cadete: ");
+            idNuevoCadete = int.Parse(Console.ReadLine());
+            if(idViejoCadete==idNuevoCadete){
+                Console.WriteLine("Ingrese ids distintos");
+            }
+        }while(idViejoCadete==idNuevoCadete);
+            var viejoCadete = cadeteria.BuscarCadetePorId(idViejoCadete);
+            var nuevoCadete = cadeteria.BuscarCadetePorId(idNuevoCadete);
+            if (viejoCadete != null && nuevoCadete != null){
+                cadeteria.ReasignarPedido(viejoCadete, nuevoCadete, pedido);
+                Console.WriteLine("Pedido reasignado con éxito.");
+            }else{
+                Console.WriteLine("Uno o ambos cadetes no existen.");
+            }
+    }
+    public static void LeerInformes(Cadeteria cadeteria){
+        string? informe=cadeteria.asignarInformeDeActividad();
+        Console.WriteLine("PROGRAMA FINALIZADO, INFORME DE ACTIVIDAD:\n"+informe);
+    }
 }

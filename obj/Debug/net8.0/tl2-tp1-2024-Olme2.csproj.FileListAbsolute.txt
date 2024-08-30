@@ -1,0 +1,15 @@
+C:\tl2-tp1-2024-Olme2\bin\Debug\net8.0\tl2-tp1-2024-Olme2.exe
+C:\tl2-tp1-2024-Olme2\bin\Debug\net8.0\tl2-tp1-2024-Olme2.deps.json
+C:\tl2-tp1-2024-Olme2\bin\Debug\net8.0\tl2-tp1-2024-Olme2.runtimeconfig.json
+C:\tl2-tp1-2024-Olme2\bin\Debug\net8.0\tl2-tp1-2024-Olme2.dll
+C:\tl2-tp1-2024-Olme2\bin\Debug\net8.0\tl2-tp1-2024-Olme2.pdb
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.GeneratedMSBuildEditorConfig.editorconfig
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.AssemblyInfoInputs.cache
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.AssemblyInfo.cs
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.csproj.CoreCompileInputs.cache
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.sourcelink.json
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.dll
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\refint\tl2-tp1-2024-Olme2.dll
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.pdb
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\tl2-tp1-2024-Olme2.genruntimeconfig.cache
+C:\tl2-tp1-2024-Olme2\obj\Debug\net8.0\ref\tl2-tp1-2024-Olme2.dll
