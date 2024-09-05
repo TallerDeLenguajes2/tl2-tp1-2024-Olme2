@@ -28,11 +28,13 @@ public class Pedidos{
     private string? obs{get;set;}
     private Cliente? cliente{get;set;}
     private string? estado{get;set;}
-    public Pedidos(string? Obs, Cliente Cliente){
+    private Cadete cadete{get;set;}
+    public Pedidos(string? Obs, Cliente Cliente, Cadete Cadete){
         numero=contador++;
         obs=Obs;
         cliente=Cliente;
         estado="Sin entregar";
+        cadete=Cadete;
     }
     public void VerNombreCliente(){
         Console.WriteLine("Nombre: "+cliente?.VerNombreCliente());
@@ -77,7 +79,6 @@ public class Cadete{
     private string? nombre{get;set;}
     private string? direccion{get;set;}
     private string? telefono{get;set;}
-    private List<Pedidos> listadoPedidos{get;set;}
     private double jornal{get;set;}
     private int cantidadDePedidosEntregados{get;set;}
     public Cadete(int Id, string Nombre, string Direccion, string Telefono){
@@ -85,15 +86,11 @@ public class Cadete{
         nombre=Nombre;
         direccion=Direccion;
         telefono=Telefono;
-        listadoPedidos=new List<Pedidos>();
         jornal=0;
         cantidadDePedidosEntregados=0;
     }
-    public void JornalACobrar(){
-        jornal=500*cantidadDePedidosEntregados;
-    }
     public bool SeEncuentraPedido(Pedidos pedido){
-        return listadoPedidos.Contains(pedido);
+        return false;
     }
     public void EntregarPedido(Pedidos pedido){
         if(SeEncuentraPedido(pedido)){
@@ -107,22 +104,13 @@ public class Cadete{
         }
     }
     public void AgregarPedido(Pedidos pedido){
-        if(SeEncuentraPedido(pedido)){
-            Console.WriteLine("El pedido ya se encuentra en la lista de pedidos");
-        }else{
-            listadoPedidos.Add(pedido);
-            EntregarPedido(pedido);
-        }
+        
     }
     public void EliminarPedido(Pedidos pedido){
-        if(SeEncuentraPedido(pedido)){
-           listadoPedidos.Remove(pedido);
-        }else{
-           Console.WriteLine("El pedido no se encuentra en la lista de pedidos");
-        }
+        
     }
     public int VerCantidadPedidos(){
-        return listadoPedidos.Count;
+        return 0;
     }
     public string AsignarInformeCadete(int pedidosTotales){
         string informe=$"\nCadete {nombre}:\nSe entregaron {cantidadDePedidosEntregados} pedidos, se ganó ${jornal} por los pedidos y el promedio de pedidos entregados de este cadete fue de {((double)cantidadDePedidosEntregados/pedidosTotales)} pedidos";
@@ -136,11 +124,11 @@ public class Cadete{
 public class Cadeteria{
     private string? nombre{get;set;}
     private string? telefono{get;set;}
-    private List<Cadete> listadoCadetes{get;set;}
     private static int pedidosEntregados{get;set;}
     private int pedidosAsignados{get;set;}
     private int pedidosReasignados{get;set;}
-    private List<Pedidos>? pedidosSinAsignar{get;set;}
+    private List<Cadete> listadoCadetes{get;set;}
+    private List<Pedidos>? listadoPedidos{get;set;}
 
     public Cadeteria(string Nombre, string Telefono){
         nombre=Nombre;
@@ -149,8 +137,9 @@ public class Cadeteria{
         pedidosEntregados=0;
         pedidosAsignados=0;
         pedidosReasignados=0;
-        pedidosSinAsignar=new List<Pedidos>();
+        listadoPedidos=new List<Pedidos>();
     }
+    pub
     public void AsignarPedido(Cadete? cadete, Pedidos pedido){
         if(cadete!=null && pedido!=null){
             if(cadete.SeEncuentraPedido(pedido)){
@@ -215,15 +204,15 @@ public class Cadeteria{
             return cadeteria;
     }
     public void AgregarPedidoALista(Pedidos pedido){
-        if(pedidosSinAsignar!=null){
-            pedidosSinAsignar.Add(pedido);
+        if(listadoPedidos!=null){
+            listadoPedidos.Add(pedido);
         }else{
             Console.WriteLine("Lista de pedidos inexistente");
         }
     }
     public Pedidos? BuscarPedidoPorNumero(int numero){
-        if(pedidosSinAsignar!=null){
-            foreach (var pedido in pedidosSinAsignar){
+        if(listadoPedidos!=null){
+            foreach (var pedido in listadoPedidos){
                 int numeroPedido=pedido.mostrarNumeroDePedido();
                 if (numeroPedido == numero){
                     return pedido;
@@ -260,8 +249,6 @@ public class Interfaz{
             Cliente cliente = new Cliente(nombreCliente, direccionCliente, telefonoCliente, referenciaDireccion);
             Console.Write("Ingrese las observaciones del pedido: ");
             string? obsPedido = Console.ReadLine();
-            Pedidos pedido = new Pedidos(obsPedido, cliente);
-            cadeteria.AgregarPedidoALista(pedido);
             Console.WriteLine("Pedido dado de alta exitosamente.");
     }
     public static void AsignarPedidoACadete(Cadeteria cadeteria){

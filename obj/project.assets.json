@@ -8,7 +8,7 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Valentino\\.nuget\\packages\\": {}
+    "C:\\Users\\Adriana\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -16,11 +16,11 @@
       "projectUniqueName": "C:\\tl2-tp1-2024-Olme2\\tl2-tp1-2024-Olme2.csproj",
       "projectName": "tl2-tp1-2024-Olme2",
       "projectPath": "C:\\tl2-tp1-2024-Olme2\\tl2-tp1-2024-Olme2.csproj",
-      "packagesPath": "C:\\Users\\Valentino\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\Adriana\\.nuget\\packages\\",
       "outputPath": "C:\\tl2-tp1-2024-Olme2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Valentino\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Adriana\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -64,7 +64,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
