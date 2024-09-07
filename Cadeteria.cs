@@ -1,3 +1,4 @@
+using System.Text.Json;
 public class Cliente{
     private string? nombre{get;set;}
     private string? direccion{get;set;}
@@ -106,18 +107,14 @@ public class Cadete{
 public class Cadeteria{
     private string? nombre{get;set;}
     private string? telefono{get;set;}
-    private static int pedidosEntregados{get;set;}
-    private int pedidosReasignados{get;set;}
-    private List<Cadete> listadoCadetes{get;set;}
-    private List<Pedidos> listadoPedidos{get;set;}
+    private static int pedidosEntregados=0;
+    private int pedidosReasignados=0;
+    private List<Cadete> listadoCadetes=new List<Cadete>();
+    private List<Pedidos> listadoPedidos=new List<Pedidos>();
 
     public Cadeteria(string Nombre, string Telefono){
         nombre=Nombre;
         telefono=Telefono;
-        pedidosEntregados=0;
-        pedidosReasignados=0;
-        listadoCadetes=new List<Cadete>();
-        listadoPedidos=new List<Pedidos>();
     }
     
     public void AsignarCadeteAPedido(int idCadete, int idPedido){
@@ -174,22 +171,12 @@ public class Cadeteria{
     public void eliminarCadete(Cadete cadete){
         listadoCadetes.Remove(cadete);
    }
-   public static Cadeteria CargarDatosCadeteria(string archivoCadeteria, string archivoCadetes){
-            var cadeteriaDatos = File.ReadAllLines(archivoCadeteria).First().Split(';');
-            Cadeteria cadeteria = new Cadeteria(cadeteriaDatos[0], cadeteriaDatos[1]);
-            var cadetesDatos = File.ReadAllLines(archivoCadetes);
-            foreach (var linea in cadetesDatos)
-            {
-                var datos = linea.Split(';');
-                int id = int.Parse(datos[0]);
-                string nombre = datos[1];
-                string direccion = datos[2];
-                string telefono = datos[3];
-
-                Cadete cadete = new Cadete(id, nombre, direccion, telefono);
+   public static Cadeteria CargarDatosCadeteria(AccesoADatos acceso, string archivoCadeteria, string archivoCadetes){
+            Cadeteria cadeteria = acceso.CargarCadeteria(archivoCadeteria);
+            List<Cadete> cadetes = acceso.CargarCadetes(archivoCadetes);
+            foreach(var cadete in cadetes){
                 cadeteria.agregarCadete(cadete);
             }
-
             return cadeteria;
     }
     public Pedidos? BuscarPedidoPorNumero(int numero){
@@ -212,6 +199,39 @@ public class Cadeteria{
             Console.WriteLine("No se pudo agregar el pedido, no existe");
         }
     }
+}
+
+public abstract class AccesoADatos{
+    public abstract List<Cadete> CargarCadetes(string archivo);
+    public abstract Cadeteria CargarCadeteria(string archivo);
+}
+public class AccesoCSV:AccesoADatos{
+    public override List<Cadete> CargarCadetes(string archivo){
+        List<Cadete> cadetes = new List<Cadete>();
+        var lines=File.ReadAllLines(archivo);
+        foreach(var line in lines){
+            var data=line.Split(';');
+            cadetes.Add(new Cadete(int.Parse(data[0]), data[1], data[2], data[3]));
+        }
+        return cadetes;
+    }
+    public override Cadeteria CargarCadeteria(string archivo){
+        var cadeteriaDatos = File.ReadAllLines(archivo).First().Split(';');
+        Cadeteria cadeteria = new Cadeteria(cadeteriaDatos[0], cadeteriaDatos[1]);
+        return cadeteria;
+    }
+
+}
+public class AccesoJSON:AccesoADatos{
+    public override List<Cadete> CargarCadetes(string archivo){
+        var jsonData = File.ReadAllText(archivo);
+        return JsonSerializer.Deserialize<List<Cadete>>(jsonData) ?? new List<Cadete>();
+    }
+    public override Cadeteria CargarCadeteria(string archivo){
+        var jsonData = File.ReadAllText(archivo);
+        return JsonSerializer.Deserialize<Cadeteria>(jsonData) ?? new Cadeteria("ERROR","ERROR");
+    }
+
 }
 
 public class Interfaz{

@@ -1,0 +1,35 @@
+[{
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "direccion": "Av. Roca 123, San Miguel de Tucumán",
+      "telefono": "381-5678",
+      "cantidadDePedidosEntregados": 0
+    },
+    {
+      "id": 2,
+      "nombre": "María Gómez",
+      "direccion": "Calle 24 de Septiembre 456, San Miguel de Tucumán",
+      "telefono": "381-8765",
+      "cantidadDePedidosEntregados": 0
+    },
+    {
+      "id": 3,
+      "nombre": "Pedro Fernández",
+      "direccion": "Av. Belgrano 742, San Miguel de Tucumán",
+      "telefono": "381-1122",
+      "cantidadDePedidosEntregados": 0
+    },
+    {
+      "id": 4,
+      "nombre": "Lucía Rodríguez",
+      "direccion": "Calle Rivadavia 8, San Miguel de Tucumán",
+      "telefono": "381-3344",
+      "cantidadDePedidosEntregados": 0
+    },
+    {
+      "id": 5,
+      "nombre": "Carlos López",
+      "direccion": "Barrio Norte 9, San Miguel de Tucumán",
+      "telefono": "381-5566",
+      "cantidadDePedidosEntregados": 0
+    }]

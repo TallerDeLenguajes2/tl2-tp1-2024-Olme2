@@ -1,5 +1,24 @@
-﻿
-Cadeteria cadeteria = Cadeteria.CargarDatosCadeteria("cadeteria.csv", "cadetes.csv");
+﻿AccesoADatos accesoADatos;
+string archivoCadeteria;
+string archivoCadetes;
+Console.WriteLine("¿Desea cargar los datos desde un archivo JSON o CSV?");
+Console.WriteLine("1. JSON");
+Console.WriteLine("2. CSV");
+int opcion;
+while(!int.TryParse(Console.ReadLine(), out opcion)){
+    Console.WriteLine("Opción no válida, intente de nuevo.");
+    continue;
+}
+if(opcion==1){
+    accesoADatos=new AccesoJSON();
+    archivoCadeteria="Cadeteria.json";
+    archivoCadetes="Cadetes.json";
+}else{
+    accesoADatos=new AccesoCSV();
+    archivoCadeteria="Cadeteria.csv";
+    archivoCadetes="Cadetes.csv";
+}
+Cadeteria cadeteria = Cadeteria.CargarDatosCadeteria(accesoADatos, archivoCadeteria, archivoCadetes);
 while (true){
     Console.WriteLine("\n----- Gestión de Pedidos -----");
     Console.WriteLine("1. Dar de alta pedido");
@@ -8,7 +27,6 @@ while (true){
     Console.WriteLine("4. Reasignar pedido a otro cadete");
     Console.WriteLine("5. Salir");
     Console.Write("Seleccione una opción: ");
-    int opcion;
     if (!int.TryParse(Console.ReadLine(), out opcion)){
         Console.WriteLine("Opción no válida, intente de nuevo.");
         continue;
