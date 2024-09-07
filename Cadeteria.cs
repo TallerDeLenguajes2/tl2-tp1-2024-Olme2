@@ -152,12 +152,21 @@ public class Cadeteria{
         }
     }
     public string asignarInformeDeActividad(){
-        string? informe=$"Se asignaron y entregaron {pedidosEntregados} pedidos\nSe reasignaron {pedidosReasignados}\nCADETES\nN°\t | NOMBRE\t | PEDIDOS ENTREGADOS\t | JORNAL\n";
-        foreach(var cadete in listadoCadetes){
-            int id=cadete.VerIdCadete();
-            informe+=id+"\t| "+cadete.VerNombreCadete()+"\t| "+cadete.verCantidadDePedidosEntregados()+"\t| "+JornalACobrar(id)+"\n";
-        }
-        return informe;
+        string? informe = $"Se asignaron y entregaron {pedidosEntregados} pedidos\nSe reasignaron {pedidosReasignados}\n";
+    informe += "CADETES\n";
+    informe += String.Format("{0,-5}| {1,-20}| {2,-18}| {3,-6}\n", "ID", "NOMBRE", "PEDIDOS ENTREGADOS", "JORNAL");
+
+    foreach (var cadete in listadoCadetes)
+    {
+        int id = cadete.VerIdCadete();
+        informe += String.Format("{0,-5}| {1,-20}| {2,-18}| {3,-6}\n",
+                                 id,
+                                 cadete.VerNombreCadete(),
+                                 cadete.verCantidadDePedidosEntregados(),
+                                 JornalACobrar(id));
+    }
+
+    return informe;
     }
     public void agregarCadete(Cadete cadete){
         listadoCadetes.Add(cadete);
@@ -184,15 +193,7 @@ public class Cadeteria{
             return cadeteria;
     }
     public Pedidos? BuscarPedidoPorNumero(int numero){
-        if(listadoPedidos!=null){
-            foreach (var pedido in listadoPedidos){
-                int numeroPedido=pedido.mostrarNumeroDePedido();
-                if (numeroPedido == numero){
-                    return pedido;
-                }
-            }
-        }
-        return null;
+        return listadoPedidos.FirstOrDefault(c => c.mostrarNumeroDePedido() == numero);
     }
     public Cadete? BuscarCadetePorId(int id){
         return listadoCadetes.FirstOrDefault(c => c.id == id);
@@ -203,6 +204,13 @@ public class Cadeteria{
             return cadete.verCantidadDePedidosEntregados()*500;
         }
         return 0;
+    }
+    public void AgregarPedidoALaLista(Pedidos? pedido){
+        if(pedido!=null){
+            listadoPedidos.Add(pedido);
+        }else{
+            Console.WriteLine("No se pudo agregar el pedido, no existe");
+        }
     }
 }
 
@@ -219,6 +227,8 @@ public class Interfaz{
             Cliente cliente = new Cliente(nombreCliente, direccionCliente, telefonoCliente, referenciaDireccion);
             Console.Write("Ingrese las observaciones del pedido: ");
             string? obsPedido = Console.ReadLine();
+            Pedidos pedido= new Pedidos(obsPedido, cliente);
+            cadeteria.AgregarPedidoALaLista(pedido);
             Console.WriteLine("Pedido dado de alta exitosamente.");
     }
     public static void AsignarPedidoACadete(Cadeteria cadeteria){
@@ -230,7 +240,6 @@ public class Interfaz{
         #pragma warning disable CS8604 // Posible argumento de referencia nulo
         int idCadete = int.Parse(Console.ReadLine());
         cadeteria.AsignarCadeteAPedido(idCadete, numeroPedido);
-        Console.WriteLine($"Pedido asignado al cadete n° {idCadete}");
     }
     public static void CambiarEstadoPedido(Cadeteria cadeteria)
         {
@@ -269,8 +278,8 @@ public class Interfaz{
                 Console.WriteLine("Ingrese ids distintos");
             }
         }while(idViejoCadete==idNuevoCadete);
-            var viejoCadete = cadeteria.BuscarCadetePorId(idViejoCadete);
-            var nuevoCadete = cadeteria.BuscarCadetePorId(idNuevoCadete);
+            Cadete? viejoCadete = cadeteria.BuscarCadetePorId(idViejoCadete);
+            Cadete? nuevoCadete = cadeteria.BuscarCadetePorId(idNuevoCadete);
             if (viejoCadete != null && nuevoCadete != null){
                 cadeteria.ReasignarPedido(viejoCadete, nuevoCadete, pedido);
                 Console.WriteLine("Pedido reasignado con éxito.");
