@@ -80,16 +80,16 @@ public class Pedidos{
 }
 public class Cadete{
     public int id{get;set;}
-    private string? nombre{get;set;}
-    private string? direccion{get;set;}
-    private string? telefono{get;set;}
-    private int cantidadDePedidosEntregados{get;set;}
-    public Cadete(int Id, string Nombre, string Direccion, string Telefono){
+    public string? nombre{get;set;}
+    public string? direccion{get;set;}
+    public string? telefono{get;set;}
+    public int cantidadDePedidosEntregados{get;set;}
+    public Cadete(int Id, string Nombre, string Direccion, string Telefono, int CantidadDePedidosEntregados){
         id=Id;
         nombre=Nombre;
         direccion=Direccion;
         telefono=Telefono;
-        cantidadDePedidosEntregados=0;
+        cantidadDePedidosEntregados=CantidadDePedidosEntregados;
     }
     public int VerIdCadete(){
         return id;
@@ -105,16 +105,18 @@ public class Cadete{
     }
 }
 public class Cadeteria{
-    private string? nombre{get;set;}
-    private string? telefono{get;set;}
-    private static int pedidosEntregados=0;
-    private int pedidosReasignados=0;
-    private List<Cadete> listadoCadetes=new List<Cadete>();
-    private List<Pedidos> listadoPedidos=new List<Pedidos>();
+    public string? nombre{get;set;}
+    public string? telefono{get;set;}
+    public int pedidosEntregados{get;set;}
+    public int pedidosReasignados{get;set;}
+    public List<Cadete>? listadoCadetes=new List<Cadete>();
+    public List<Pedidos>? listadoPedidos=new List<Pedidos>();
 
-    public Cadeteria(string Nombre, string Telefono){
+    public Cadeteria(string Nombre, string Telefono, int PedidosEntregados, int PedidosReasignados){
         nombre=Nombre;
         telefono=Telefono;
+        pedidosEntregados=PedidosEntregados;
+        pedidosReasignados=PedidosReasignados;
     }
     
     public void AsignarCadeteAPedido(int idCadete, int idPedido){
@@ -127,7 +129,9 @@ public class Cadeteria{
                 pedido.EliminarCliente();
                 cadete.aumentarPedidosEntregados();
                 pedidosEntregados++;
-                listadoPedidos.Add(pedido);
+                if(listadoPedidos!=null){
+                    listadoPedidos.Add(pedido);
+                }
                 Console.WriteLine("Pedido n° "+idPedido+" asignado con exito a cadete n° "+idCadete+" y entregado con exito");
             }else{
                 Console.WriteLine("Pedido n° "+idPedido+" ya fue entregado");
@@ -152,23 +156,28 @@ public class Cadeteria{
         string? informe = $"Se asignaron y entregaron {pedidosEntregados} pedidos\nSe reasignaron {pedidosReasignados}\n";
     informe += "CADETES\n";
     informe += String.Format("{0,-5}| {1,-20}| {2,-18}| {3,-6}\n", "ID", "NOMBRE", "PEDIDOS ENTREGADOS", "JORNAL");
-
+    if(listadoCadetes!=null)
     foreach (var cadete in listadoCadetes)
     {
-        int id = cadete.VerIdCadete();
-        informe += String.Format("{0,-5}| {1,-20}| {2,-18}| {3,-6}\n",
-                                 id,
-                                 cadete.VerNombreCadete(),
-                                 cadete.verCantidadDePedidosEntregados(),
-                                 JornalACobrar(id));
+        int id;
+        if(cadete!=null){
+            id = cadete.VerIdCadete();
+            informe += String.Format("{0,-5}| {1,-20}| {2,-18}| {3,-6}\n",
+                                    id,
+                                    cadete.VerNombreCadete(),
+                                    cadete.verCantidadDePedidosEntregados(),
+                                    JornalACobrar(id));
+        }
     }
 
     return informe;
     }
     public void agregarCadete(Cadete cadete){
+        if(listadoCadetes!=null)
         listadoCadetes.Add(cadete);
     }
     public void eliminarCadete(Cadete cadete){
+        if(listadoCadetes!=null)
         listadoCadetes.Remove(cadete);
    }
    public static Cadeteria CargarDatosCadeteria(AccesoADatos acceso, string archivoCadeteria, string archivoCadetes){
@@ -180,10 +189,16 @@ public class Cadeteria{
             return cadeteria;
     }
     public Pedidos? BuscarPedidoPorNumero(int numero){
-        return listadoPedidos.FirstOrDefault(c => c.mostrarNumeroDePedido() == numero);
+        if(listadoPedidos!=null)
+            return listadoPedidos.FirstOrDefault(c => c.mostrarNumeroDePedido() == numero);
+        else
+        return null;
     }
     public Cadete? BuscarCadetePorId(int id){
+        if(listadoCadetes!=null)
         return listadoCadetes.FirstOrDefault(c => c.id == id);
+        else
+        return null;
     }
     public double JornalACobrar(int id){
         Cadete? cadete=BuscarCadetePorId(id);
@@ -192,8 +207,8 @@ public class Cadeteria{
         }
         return 0;
     }
-    public void AgregarPedidoALaLista(Pedidos? pedido){
-        if(pedido!=null){
+    public void AgregarPedidoALaLista(Pedidos pedido){
+        if(listadoPedidos!=null){
             listadoPedidos.Add(pedido);
         }else{
             Console.WriteLine("No se pudo agregar el pedido, no existe");
@@ -211,13 +226,13 @@ public class AccesoCSV:AccesoADatos{
         var lines=File.ReadAllLines(archivo);
         foreach(var line in lines){
             var data=line.Split(';');
-            cadetes.Add(new Cadete(int.Parse(data[0]), data[1], data[2], data[3]));
+            cadetes.Add(new Cadete(int.Parse(data[0]), data[1], data[2], data[3], int.Parse(data[4])));
         }
         return cadetes;
     }
     public override Cadeteria CargarCadeteria(string archivo){
         var cadeteriaDatos = File.ReadAllLines(archivo).First().Split(';');
-        Cadeteria cadeteria = new Cadeteria(cadeteriaDatos[0], cadeteriaDatos[1]);
+        Cadeteria cadeteria = new Cadeteria(cadeteriaDatos[0], cadeteriaDatos[1], int.Parse(cadeteriaDatos[2]), int.Parse(cadeteriaDatos[3]));
         return cadeteria;
     }
 
@@ -229,7 +244,7 @@ public class AccesoJSON:AccesoADatos{
     }
     public override Cadeteria CargarCadeteria(string archivo){
         var jsonData = File.ReadAllText(archivo);
-        return JsonSerializer.Deserialize<Cadeteria>(jsonData) ?? new Cadeteria("ERROR","ERROR");
+        return JsonSerializer.Deserialize<Cadeteria>(jsonData) ?? new Cadeteria("ERROR", "ERROR", 0, 0);
     }
 
 }

@@ -1,4 +1,6 @@
 { 
     "nombre": "Cadeteria Olmedo",
-    "telefono": "3814154708"
+    "telefono": "3814154708",
+    "pedidosEntregados": 0,
+    "pedidosReasignados": 0
 }
